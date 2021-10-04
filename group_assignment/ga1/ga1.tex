@@ -1,0 +1,40 @@
+\documentclass[11pt,a4paper]{article}
+
+% Language setting
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with`a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{Group Assignment 1.1}
+\author{Daniel Gustafsson, Valerio Akman}
+\begin{document}
+\maketitle
+
+\section{Algorithm}
+\subsection{The algorithm definition}
+We assign each variable $x \in \{x_1, x_2, ... ,x_n\}$ a random value from the set $\{1,...,k\}$.
+
+\subsection{Time complexity analysis}
+The algorithm assigns \textit{n} values each assignment takes constant time O(1) .  This leads to time complexity $\Theta (n)$.
+
+\subsection{The expectation}
+We know from the start that there are \textit{m} inequalities which means that $\text{OPT} \leq m$ where \textit{OPT} is the optimal number of inequalities.
+For a inequality $E_i$ to be satisfied, the condition $x_{i_1} \ne x_{i_2}$ needs to be satisfied. Let $X_1,...,X_m$ be random variables, such that: 
+\[\text{E}[X_i] = \text{P}(x_{i_1} \ne x_{i_2}) = 1 - \text{P}(x_{i_1} = x_{i_2}) = 1 - \frac{1}{k}\]
+Where $P(x_{i_1} \ne x_{i_2})$ is the probability that two separate variables are unequal. The probability to assign the same value from the set $\{1, \cdots k\}$ to two different variables is $\frac{1}{k}$.
+
+Now let X be a random variable which represents the number of satisfied inequalities m, such that:
+\[\text{E}[X] = \sum_{i_\in [m]} \text{E}[X_i] = m(1 - \frac{1}{k}) \]
+
+Now if we switch \textit{m} to \textit{OPT} we get the following:
+
+\[\text{E}[ALG] = \text{E}[X] \geq (1 - \frac{1}{k})OPT\]
+where \textit{ALG} is the number of inequalities satisfied by the algorithm.
+\end{document}
