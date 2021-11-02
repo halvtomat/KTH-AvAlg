@@ -1,1 +1,6 @@
 __pycache__
+*.aux
+*.pdf
+*.log
+*.out
+.vscode
