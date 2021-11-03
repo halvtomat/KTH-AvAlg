@@ -11,14 +11,11 @@ def isCompatible(order = [], obs = []):
 def algorithm(genes = [], observations = []):
 	order = genes
 	ratio = 0
-	k = 100
-	i = 0
-	while ratio < 0.2 and i < 100:
+	while ratio < 0.2:
 		numCompatible = 0
 		random.shuffle(order)
 		for obs in observations:
 			if isCompatible(order, obs):
 				numCompatible += 1
 		ratio = numCompatible/len(observations)
-		i += 1
 	return order
