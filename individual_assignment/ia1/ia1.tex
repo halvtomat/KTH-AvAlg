@@ -60,7 +60,9 @@ $1/3$ out of the available orders.
 \noindent This means that the probability that any observation is
 compatible with any order is $1/3$.
 
-\noindent When \textit{m} is bigger, $Pr[raito > 0.2]$ is bigger,
-the worst case is when there is only 1 observation.
+\noindent When re-shuffling the order \textit{k} times, $Pr[ratio \ge 0.2] = 1 - \prod_{1}^{k} Pr[ratio < 0.2] = 1$ given a great enough \textit{k}
+
+\noindent When \textit{m} is bigger, $Pr[ratio > 0.2]$ is bigger,
+the worst case is when $\textit{m} = 1$, then $Pr[ratio \ge 0.2] = Pr[ratio = 1.0] = 1/3$.
 
 \end{document}
