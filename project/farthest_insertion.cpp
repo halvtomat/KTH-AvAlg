@@ -13,7 +13,6 @@ double **nodes;
 double **distances;
 vector<int> path;
 vector<int> not_path;
-double total_distance;
 
 double distance(double x1, double y1, double x2, double y2) {
     return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
@@ -29,7 +28,7 @@ int farthest_node() {
 		double curr_dist = sqrt(sum_of_distances);
 		if (curr_dist > prev_dist) {
 			prev_dist = curr_dist;
-			max = i;
+			max = not_path[i];
 		}
 	}
 	return max;
@@ -82,9 +81,8 @@ void init_nodes() {
 	cin >> number_of_nodes;
 	nodes = new double*[number_of_nodes];
 	distances = new double*[number_of_nodes];
-	not_path.reserve(number_of_nodes);
 	for (size_t i = 0; i < number_of_nodes; i++) {
-		not_path[i] = i;
+		not_path.push_back(i);
 		nodes[i] = new double[2];
 		distances[i] = new double[number_of_nodes];
 		cin >> nodes[i][0];
@@ -92,11 +90,11 @@ void init_nodes() {
 	}
 }
 
-void calc_total_distance() {
-	double temp_distance = 0;
+double calc_total_distance() {
+	double total_distance = 0;
 	for (size_t i = 0; i < path.size() - 1; i++)
-		temp_distance += distances[path[i]][path[i + 1]];
-	total_distance = temp_distance;
+		total_distance += distances[path[i]][path[i + 1]];
+	return total_distance;
 }
 
 int main(int argc, char const *argv[]) {
@@ -124,16 +122,16 @@ int main(int argc, char const *argv[]) {
 
 	path.push_back(max_nodes[0]);
 	path.push_back(max_nodes[1]);
-	int farthest = farthest_node();
-	path.push_back(farthest);
 	not_path.erase(remove(not_path.begin(), not_path.end(), max_nodes[0]), not_path.end());
 	not_path.erase(remove(not_path.begin(), not_path.end(), max_nodes[1]), not_path.end());
+	int farthest = farthest_node();
+	path.push_back(farthest);
 	not_path.erase(remove(not_path.begin(), not_path.end(), farthest), not_path.end());
 
 	while(not_path.size() > 0) {
 		farthest = farthest_node();
 		int index = shortest_distance_node_in_path(farthest);
-		path.insert(path.begin(), index, farthest);
+		path.insert(path.begin() + index, farthest);
 		not_path.erase(remove(not_path.begin(), not_path.end(), farthest), not_path.end());
 	}
 
