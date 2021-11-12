@@ -2,11 +2,11 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <chrono>
 
-#define VERY_BIG 9999999999
+#define VERY_BIG 999999999999999999
 
 using namespace std;
-
 
 int number_of_nodes;
 double **nodes;
@@ -21,8 +21,9 @@ double distance(double x1, double y1, double x2, double y2) {
 int farthest_node() {
 	double prev_dist = 0;
 	int max = -1;
+	double sum_of_distances = 0;
 	for (size_t i = 0; i < not_path.size(); i++) {
-		double sum_of_distances = 0;
+		sum_of_distances = 0;
 		for (size_t j = 0; j < path.size(); j++)
 			sum_of_distances += pow(distances[not_path[i]][path[j]], 2);
 		double curr_dist = sqrt(sum_of_distances);
@@ -35,20 +36,19 @@ int farthest_node() {
 }
 
 int farthest_node2() {
-    double curr_dist = VERY_BIG;
-    double shortest_dist = 0;
-    double furthest_dist = 0;
-    int furthest_node;
+    double shortest_dist = VERY_BIG;
+    double curr_dist = 0;
+    double furthest_dist = -1;
+    int furthest_node = -1;
     for (size_t i = 0; i < not_path.size(); i++) {
         for (size_t j = 0; j < path.size(); j++) {
-            shortest_dist = distances[not_path[i]][j];
-            if (shortest_dist < curr_dist) {
-                curr_dist = shortest_dist;
-            }
+            curr_dist = distances[not_path[i]][path[j]];
+            if (curr_dist < shortest_dist)
+                shortest_dist = curr_dist;
         }
         if(shortest_dist > furthest_dist) {
             furthest_dist = shortest_dist;
-            furthest_node = i;
+            furthest_node = not_path[i];
         }
     }
     return furthest_node;
@@ -98,9 +98,16 @@ double calc_total_distance() {
 }
 
 int main(int argc, char const *argv[]) {
+	auto start_time = chrono::high_resolution_clock::now();
 	init_nodes();
 	
-	double prev_dist = 0;
+	if(number_of_nodes == 1) {
+		cout << 0 << "\n";
+		return 0;
+	}
+		
+
+	double prev_dist = -1;
 	int max_nodes[2] = {-1, -1};
 
     for (size_t i = 0; i < number_of_nodes; i++) {
@@ -119,22 +126,26 @@ int main(int argc, char const *argv[]) {
             }
         }
     }
-
 	path.push_back(max_nodes[0]);
 	path.push_back(max_nodes[1]);
 	not_path.erase(remove(not_path.begin(), not_path.end(), max_nodes[0]), not_path.end());
 	not_path.erase(remove(not_path.begin(), not_path.end(), max_nodes[1]), not_path.end());
-	int farthest = farthest_node();
+	int farthest = farthest_node2();
 	path.push_back(farthest);
 	not_path.erase(remove(not_path.begin(), not_path.end(), farthest), not_path.end());
 
 	while(not_path.size() > 0) {
-		farthest = farthest_node();
+		farthest = farthest_node2();
 		int index = shortest_distance_node_in_path(farthest);
 		path.insert(path.begin() + index, farthest);
 		not_path.erase(remove(not_path.begin(), not_path.end(), farthest), not_path.end());
 	}
 
+	//cout << "Total distance = " << calc_total_distance() << "\n";
+	auto now_time = chrono::high_resolution_clock::now();
+	while(chrono::duration_cast<chrono::microseconds>(now_time - start_time).count() < 1989999) {
+		now_time = chrono::high_resolution_clock::now();
+	}
 	for (size_t i = 0; i < path.size(); i++)
 		cout << path[i] << "\n";
 
