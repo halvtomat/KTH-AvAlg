@@ -1,0 +1,106 @@
+\documentclass[11pt,a4paper]{article}
+
+% Language setting
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with`a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+
+\title{Group Assignment 2.2}
+\author{Daniel Gustafsson, Valerio Akman}
+\begin{document}
+\maketitle
+
+\section{Solution}
+\subsection{The algorithm definition}
+Run Karger's extended algorithm several times to find and save all Mincuts. Calculate probability to miss one or more Mincuts.
+
+\subsection{Pseudo code}
+\begin{algorithmic}[1]
+\State $solutions \gets \emptyset$
+\State $minCut \gets \infty$
+\For{$1$ to $N$}
+    \State ($cut$,A,B) $\gets \text{Karger\textquotesingle s extended algorithm(G)}$
+    \If{$cut < minCut$}
+        \State $solutions \gets \emptyset$
+        \State $minCut \gets cut$
+    \If{$cut = minCut$}
+        \If{(A,B) not in $solutions$}
+            \State $solutions \gets solutions \cup \text{(A,B)}$
+        
+\Return ($minCut,solutions$)
+\end{algorithmic}
+
+\subsection{Algorithm analysis}
+
+\fbox{\parbox{\textwidth}{\textbf{Lemma 1:} The probability of Karger's algorithm finds a Mincut in a graph $G = (V,E)$ is $ \ge \frac{2}{n(n-1)} > \frac{1}{n^2} $ which is $\Omega (\frac{1}{n^2})$ where $|V|= n$. \newline
+
+\textit{Proof:} Proven in class.
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 2:} The following inequality holds for $x \ge 1: (1-\frac{1}{x})^x \le \frac{1}{e}$. \newline
+
+\textit{Proof:} Proven in class.
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 3:} Karger's algorithm runs in $\mathcal{O}(n^2)$ time. Karger's extended algorithm adds and retrieves from a map in constant time so it still has a running time of $\mathcal{O}(n^2)$. \newline
+
+\textit{Proof:} Proven in class
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 4:} The probability that Karger's algorithm does not find a Mincut is $< 1 - \frac{1}{n^2}$ \newline
+
+\textit{Proof:} From lemma 1 we get the probability that Karger's algorithm finds a Mincut is $> \frac{1}{n^2}$ hence we can conclude that the probability to not find a Mincut is $< 1 - \frac{1}{n^2}$.
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 5:} The maximum amount of Mincuts in $V$ is $n^2$. \newline
+
+\textit{Proof}: From lemma 1 we have the probability to find a Mincut is $> \frac{1}{n^2}$. Since the event of finding a Mincut is disjoint from finding another Mincut, we are able to realize that the number of Mincuts in a graph are less than $\frac{1}{\frac{1}{n^2}} = n^2$.
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 6:} If running the algorithm $3 n^2 \log n$ times, the probability to find all Mincuts is $> p = \frac{2}{3}$. \newline
+
+\textit{Proof}: By running Karger's extended algorithm $3n^2 \log n$ times we get the following: 
+
+\[Pr[\text{missing some MinCut}] < \Big(1 - \frac{1}{n^2}\Big)^{2n^2 \log n} = \bigg(\Big(1 - \frac{1}{n^2}\Big)^{n^2}\bigg)^{3 \log n}\]
+
+the inequality $(1-\frac{1}{x^2})^2 \le \frac{1}{e}$ holds for $x \ge 1 $. Using this knowledge we get the following:
+
+\[Pr[\text{missing some MinCut}] < \bigg(\Big(1 - \frac{1}{n^2}\Big)^{n^2}\bigg)^{3 \log n} \le \Big(\frac{1}{e}\Big)^{3\log n}\]
+
+Which brings us to
+
+\[Pr[\text{missing some MinCut}] < \frac{1}{e^{3 \log n}} = \frac{1}{e^{\log n^3}} = \frac{1}{n^3}\]
+
+Now because we know from lemma 5 that the event of finding a Mincut is disjoint from finding another and that the total number of Mincuts is less than $n^2$ we can calculate the probability that at least one of the Mincuts remain unfound.
+
+\[Pr[\text{missing at least 1 Mincut}] < n^2 \frac{1}{n^3} = \frac{1}{n}\]
+
+We know from the definition of Mincut that  $n > 2$ which leads to
+
+\[Pr[\text{missing at least 1 Mincut}]\frac{1}{3}\]
+
+With this it is trivial to find that 
+
+\[Pr[\text{find all Mincuts}] = 1 - Pr[\text{missing at least 1 Mincut}] > \frac{2}{3} = p > 0\]
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 7:} The algorithm runs in polynomial time. \newline
+
+\textit{Proof}: Time complexity to run Karger's extended algorithm is $\mathcal{O}(n^2)$ and in our solution we run Karger's algorithm $3 n^2 \log n$ times, this yields:
+
+\[\mathcal{O}(n^2 \times 3 n^2 \log n) = \mathcal{O}(n^4 \log n) \]
+}}
+
+\end{document}
