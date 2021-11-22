@@ -1,0 +1,162 @@
+\documentclass[11pt,a4paper]{article}
+
+% Language setting
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with`a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+
+\title{Group Assignment 3.2}
+\author{Daniel Gustafsson, Valerio Akman}
+\begin{document}
+\maketitle
+
+\section{Solution}
+The suggested solution is to use the Misra-Gries(Boyer-Moore) algorithm on Alice's values, send the calculated ID and counter values to Bob as initial values for a run of the Misra-Gries algorithm on his values. If Bobs calculated counter value is $0$ after running Misra-Gries, send $0$ to Alice. If Bobs counter value is more than $0$, check the ID value and count how many of that value is in Bobs values, send this value to Alice. Alice can now read the values from Bob and check her values to see if the ID value Bob sent exists more than $m$ times.
+
+\vspace{2mm}\noindent\textbf{Input}: $\textit{highest value in streams} = n, \textit{number of elements in each of the streams} = m, \textit{stream 1} = (a_1,...,a_m), \textit{stream 2} = (b_1,...,b_m)$.
+
+\noindent\textbf{Output}: either which element appears more than $m$ times or "no majority".
+
+\subsection{Description of Misra-Gries algorithm}
+The algorithm will iterate through a data stream once and find the most common value (if any) in that stream.
+
+When iterating through the data stream, a counter is kept to keep track of the most common value in the stream. If the next element in the stream is the same as the current most common value, increment the counter, otherwise decrement it. If the counter is $0$, increment the counter and set the next elements value as most common. 
+
+The final most common value is the only value which could potentially make up a majority of the data stream.
+
+\subsection{Pseudo code}
+\begin{algorithmic}[1]
+\State $counterAlice \gets 0$
+\State $idAlice \gets a_1$
+\For{$a_i$ in $a_1,...,a_m$}
+    \If{$counterAlice = 0$}
+        \State $idAlice \gets a_i$
+        \State $counterAlice \gets 1$
+    \ElsIf{$idAlice = a_i$}
+        \State $counterAlice \gets counterAlice + 1$
+    \Else
+        \State $counterAlice \gets counterAlice - 1$
+    \EndIf
+\EndFor
+\State Send $counterAlice$ and $idAlice$ to Bob
+\State ...
+\State $counterBob \gets counterAlice$
+\State $idBob \gets idAlice$
+\For{$b_i$ in $b_1,...,b_m$}
+     \If{$counterBob = 0$}
+        \State $idBob \gets b_i$
+        \State $counterBob \gets 1$
+    \ElsIf{$idBob = b_i$}
+        \State $counterBob \gets counterBob + 1$
+    \Else
+        \State $counterBob \gets counterBob - 1$
+    \EndIf
+\EndFor
+\If{$counterBob = 0$}
+    \State Send $0$ to Alice
+\Else
+    \State $counterBob \gets 0$
+    \For{$b_i$ in $b_1,...,b_m$}
+        \If{$idBob = b_i$}
+            \State $counterBob \gets counterBob + 1$
+        \EndIf
+    \EndFor
+\EndIf
+\State Send $counterBob$ and $idBob$ to Alice
+\State ...
+\If{Message from Bob $= 0$}
+    \State \Return "No majority"
+\Else
+    \State $counterAlice \gets counterBob$
+    \For{$a_i$ in $a_1,...,a_m$}
+        \If{$idBob = a_i$}
+            \State $counterAlice \gets counterAlice + 1$
+        \EndIf
+    \EndFor
+    \If{$counterAlice > m$}
+        \State \Return $idBob$
+    \Else
+        \State \Return "No majority"
+    \EndIf
+\EndIf
+\end{algorithmic}
+
+\section{Proof}
+\fbox{\parbox{\textwidth}{\textbf{Lemma 1:} The counter values can be at most $2m$.
+\newline
+
+\textit{Proof}: There is a total of $2m$ numbers (Alice's and Bob's combined) which means a number can only appear a maximum of $2m$ times.
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 2:} The ID values can be at most $n$.
+\newline
+
+\textit{Proof}: The highest possible value of all numbers is by definition $n$.
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 3:} The messages will need at most $\log_2(n) + \log_2(2m)$ bits.
+\newline
+
+\textit{Proof}: The messages will consist of only two numbers, counter and ID values, which have been proven in Lemma 1 and Lemma 2 to be at most $2m$ and $n$ respectively.
+\newline
+
+A message consisting of these two numbers can be written with $\log_2(n) + \log_2(2m)$ bits. 
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 4:} $\log_2(n) + \log_2(2m) \le \log_2^{\mathcal{O}(1)}(m + n)$.
+\newline
+
+\textit{Proof}: It is known that $n > 1$ and $m > 1$. Therefore the smallest values for $m = n = 2$. Using $\mathcal{O}(1) = 2$, we get the following:
+
+\[\log_2(2) + \log_2(4) = 1 + 2 = 3\]
+
+\[\log_2^{2}(2 + 2) = 2^{2} = 4\]
+
+It is now trivial to see that $3 < 4$ and $\log_2(n) + \log_2(2m) \le \log_2^{\mathcal{O}(1)}(m + n)$.
+
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 5:} If some value makes up the majority of a data stream, the Misra-Gries algorithm will find which. 
+\newline
+
+\textit{Proof}: If a value appears at least $m + 1$ times in a stream of size $2m$, the counters final value will be $\ge 1$ and the most common value (or ID variable in the pseudo code) would have to be the value which makes up a majority of the data stream.
+\newline
+
+\textit{Note}: If no value makes up the majority of the data stream, the counter and most common values could be any value.
+
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 6:} If the Misra-Gries algorithm's final counter value $= 0$, there is no majority value in the data stream.
+\newline
+
+\textit{Proof}: In Lemma 5 it is proven that for a value to appear at least $m + 1$ times in a data stream, the final counter value would have to be $\ge 1$, which in turn means that a value $< 1$ is not possible if a majority value exists.
+
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 7:} The suggested algorithm will output the majority value or if none exists "No majority".
+\newline
+
+\textit{Proof}: When running the Misra-Gries algorithm the second time (on Bobs values), it will be as if the Misra-Gries algorithm was run on one data stream of size $2m$.
+\newline
+
+Proven in Lemma 5, the final ID value is the only value which could make up a majority of the combined data stream. To know for sure if the value is a majority value or not, the number of occurrences of that value is counted in both Bob's and Alice's data streams. 
+\newline
+
+If the number of occurrences is greater than $m$, the value is a majority value and is outputted. If the number of occurrences is equal to or less than $m$, "No majority" is outputted. If the counter value returned to Alice from Bob is equal to $0$, there is no majority value and "No majority" is outputted.
+
+}}
+
+\end{document}
+
