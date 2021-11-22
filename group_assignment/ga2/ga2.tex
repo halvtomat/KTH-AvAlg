@@ -35,11 +35,15 @@ Run Karger's extended algorithm several times to find and save all Mincuts. Calc
     \If{$cut < minCut$}
         \State $solutions \gets \emptyset$
         \State $minCut \gets cut$
+    \EndIf
+    
     \If{$cut = minCut$}
         \If{(A,B) not in $solutions$}
             \State $solutions \gets solutions \cup \text{(A,B)}$
-        
-\Return ($minCut,solutions$)
+        \EndIf
+    \EndIf
+\EndFor
+\State \Return ($minCut,solutions$)
 \end{algorithmic}
 
 \subsection{Algorithm analysis}
