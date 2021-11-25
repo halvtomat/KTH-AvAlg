@@ -46,7 +46,7 @@ void opt2_swap(int a, int b) {
 		for (size_t i = 0; i < path.size(); i++)
 			path[i] = opt_path[i];
 	}
-	cout << calc_total_distance() << " , temp = " << temp << " , c =" << c << "\n";
+	cout << calc_total_distance() << " , temp = " << temp << " , c = " << c << "\n";
 }
 
 
