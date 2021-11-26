@@ -6,7 +6,7 @@
 #include <random>
 
 #define VERY_BIG 999999999999999999
-#define TIME_LIMIT 30000000//1989999
+#define TIME_LIMIT 1989999
 
 using namespace std;
 
@@ -41,12 +41,13 @@ void opt2_swap(int a, int b) {
 		opt_path[i] = path[a + b - i];
 	for (size_t i = b + 1; i < path.size(); i++)
 		opt_path[i] = path[i];
-	double c = calc_total_distance() - calc_total_distance_opt();
-	if(c <= 0 || (rand() / (RAND_MAX)) > exp(-c/temp)) {
+	double c = calc_total_distance_opt() - calc_total_distance();
+	if(c <= 0 || ((double) rand() / (RAND_MAX)) < exp(-(abs(c)/temp))) {
+		//cout << "rand = " << ((double) rand() / (RAND_MAX)) << " ,\t\t exp =" << exp(-(abs(c)/temp)) << " ,\t\t\t\t temp = " << temp << " ,\t c = " << c << "\n";
 		for (size_t i = 0; i < path.size(); i++)
 			path[i] = opt_path[i];
 	}
-	cout << calc_total_distance() << " , temp = " << temp << " , c = " << c << "\n";
+	//cout << calc_total_distance() << " , temp = " << temp << " , c = " << c << "\n";
 }
 
 
@@ -66,7 +67,7 @@ void opt2() {
 		}
 	}
 	if(temp > 0.01)
-		temp -= 0.0001;
+		temp = 0.5 - temp/10;
 }
 
 double distance(double x1, double y1, double x2, double y2) {
@@ -86,7 +87,7 @@ void init_nodes() {
 	cin >> number_of_nodes;
 	nodes = new double*[number_of_nodes];
 	distances = new double*[number_of_nodes];
-	temp = 1.0;
+	temp = 0.5;
 	for (size_t i = 0; i < number_of_nodes; i++) {
 		path.push_back(i);
 		opt_path.push_back(i);
@@ -125,9 +126,9 @@ int main(int argc, char const *argv[]) {
 		now_time = chrono::high_resolution_clock::now();
 	}
 
-	cout << "Total distance = " << calc_total_distance() << "\n";
+	//cout << "Total distance = " << calc_total_distance() << "\n";
 
-	//print_path();
+	print_path();
 
 	exit();
 	return 0;
