@@ -7,6 +7,7 @@
 
 #define VERY_BIG 999999999999999999
 #define TIME_LIMIT 1989999
+#define INITIAL_TEMP 1000.0
 
 using namespace std;
 
@@ -66,8 +67,10 @@ void opt2() {
 				return;
 		}
 	}
-	if(temp > 0.01)
-		temp = 0.5 - temp/10;
+	if(temp > 0)
+		temp -= INITIAL_TEMP / (1000 / number_of_nodes);
+	if(temp < 0)
+		temp = 0;
 }
 
 double distance(double x1, double y1, double x2, double y2) {
@@ -87,7 +90,7 @@ void init_nodes() {
 	cin >> number_of_nodes;
 	nodes = new double*[number_of_nodes];
 	distances = new double*[number_of_nodes];
-	temp = 0.5;
+	temp = INITIAL_TEMP / number_of_nodes;
 	for (size_t i = 0; i < number_of_nodes; i++) {
 		path.push_back(i);
 		opt_path.push_back(i);
@@ -126,9 +129,9 @@ int main(int argc, char const *argv[]) {
 		now_time = chrono::high_resolution_clock::now();
 	}
 
-	//cout << "Total distance = " << calc_total_distance() << "\n";
+	cout << "Total distance = " << calc_total_distance() << " , Total time = " << chrono::duration_cast<chrono::microseconds>(now_time - start_time).count() << "\n";
 
-	print_path();
+	//print_path();
 
 	exit();
 	return 0;

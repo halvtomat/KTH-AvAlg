@@ -5,6 +5,8 @@
 #include <chrono>
 #include <random>
 #include <stack>
+#include "helper.h"
+#include "opt2.h"
 
 #define VERY_BIG numeric_limits<int>::max()
 #define TIME_LIMIT 1989999
@@ -17,24 +19,6 @@ double **nodes;
 double **distances;
 vector<int> *adjacency_list;
 vector<int> odd_degree;
-double temp;
-
-double calc_total_distance(vector<int> &path) {
-	double total_distance = 0;
-	for (size_t i = 0; i < path.size() - 1; i++)
-		total_distance += distances[path[i]][path[i + 1]];
-	total_distance += distances[path[0]][path[path.size() - 1]];
-	return total_distance;
-}
-
-void print_path(vector<int> &path) {
-	for (size_t i = 0; i < path.size(); i++)
-		cout << path[i] << "\n";
-}
-
-double distance(double x1, double y1, double x2, double y2) {
-    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
-}
 
 void exit() {
 	for (size_t i = 0; i < number_of_nodes; i++) {
@@ -44,34 +28,6 @@ void exit() {
 	delete[] nodes;
 	delete[] distances;
 	delete[] adjacency_list;
-}
-
-void opt2_swap(int a, int b, vector<int> &path) {
-	vector<int> opt_path;
-	for (size_t i = 0; i < a; i++)
-		opt_path.push_back(path[i]);
-	for (size_t i = a; i < b + 1; i++)
-		opt_path.push_back(path[a + b - i]);
-	for (size_t i = b + 1; i < path.size(); i++)
-		opt_path.push_back(path[i]);
-	double c = calc_total_distance(opt_path) - calc_total_distance(path);
-	if(c <= 0 || ((double) rand() / (RAND_MAX)) < exp(-(abs(c)/temp))) {
-		for (size_t i = 0; i < path.size(); i++)
-			path[i] = opt_path[i];
-	}
-}
-
-void opt2(vector<int> &path) {
-	for (size_t i = 0; i < path.size() - 2; i++) {
-		for (size_t j = i + 1; j < path.size(); j++) {
-			opt2_swap(i, j, path);
-			auto now_time = chrono::high_resolution_clock::now();
-			if(chrono::duration_cast<chrono::microseconds>(now_time - start_time).count() >= TIME_LIMIT)
-				return;
-		}
-	}
-	if(temp > 0.01)
-		temp -= 0.05;
 }
 
 int closest_node(int key[], bool mst[]) { //getMinIndex
@@ -198,40 +154,20 @@ void hamilton(vector<int> &path) {
 	}
 }
 
-void init_nodes() {
-	cin >> number_of_nodes;
-	nodes = new double*[number_of_nodes];
-	distances = new double*[number_of_nodes];
-	adjacency_list = new vector<int>[number_of_nodes];
-	temp = 20.0;
-	for (size_t i = 0; i < number_of_nodes; i++) {
-		nodes[i] = new double[2];
-		distances[i] = new double[number_of_nodes];
-		cin >> nodes[i][0];
-		cin >> nodes[i][1];
-	}
-}
 
-void init_distances() {
-	for (size_t i = 0; i < number_of_nodes; i++) {
-        for (size_t j = i + 1; j < number_of_nodes; j++) {
-            double curr_dist = distance(nodes[i][0], nodes[i][1], nodes[j][0], nodes[j][1]);
-            distances[i][j] = curr_dist;
-			distances[j][i] = curr_dist;
-        }
-    }
-}
 
 int main(int argc, char const *argv[]) {
+	ios::sync_with_stdio(false);
 	start_time = chrono::high_resolution_clock::now();
-	init_nodes();
+	init_nodes(number_of_nodes, nodes, distances);
+	adjacency_list = new vector<int>[number_of_nodes];
 	
 	if(number_of_nodes == 1) {
 		cout << 0 << "\n";
 		return 0;
 	}
 
-	init_distances();
+	calc_distances(number_of_nodes, nodes, distances);
 
 	init_mst();
 
@@ -243,7 +179,7 @@ int main(int argc, char const *argv[]) {
 		vector<int> path;
 		euler_tour(i, path);
 		hamilton(path);
-		double dist = calc_total_distance(path);
+		double dist = calc_total_distance(path, distances);
 		if(dist < best_dist)
 			best_start = i;
 	}
@@ -255,13 +191,13 @@ int main(int argc, char const *argv[]) {
 
 	auto now_time = chrono::high_resolution_clock::now();
 	while(chrono::duration_cast<chrono::microseconds>(now_time - start_time).count() < TIME_LIMIT) {
-		opt2(path);
+		opt2(path, distances);
 		now_time = chrono::high_resolution_clock::now();
 	}
 
-	cout << "Total distance = " << calc_total_distance(path) << "\n";
+	cerr << "Total distance = " << calc_total_distance(path, distances) << " , Total time = " << chrono::duration_cast<chrono::microseconds>(now_time - start_time).count() << "\n";
 
-//	print_path(path);
+	//print_path(path);
 
 	exit();
 	return 0;
