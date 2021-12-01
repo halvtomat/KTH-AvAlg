@@ -1,37 +1,7 @@
-#include <iostream>
-#include <cmath>
-#include <vector>
-#include <algorithm>
-#include <chrono>
-#include <random>
-#include <stack>
-#include "helper.h"
-#include "opt2.h"
+#include "christofides.h"
 
-#define VERY_BIG numeric_limits<int>::max()
-#define TIME_LIMIT 1989999
-
-using namespace std;
-
-chrono::time_point<chrono::high_resolution_clock> start_time;
-int number_of_nodes;
-double **nodes;
-double **distances;
-vector<int> *adjacency_list;
-vector<int> odd_degree;
-
-void exit() {
-	for (size_t i = 0; i < number_of_nodes; i++) {
-		delete[] nodes[i];
-		delete[] distances[i];
-	}
-	delete[] nodes;
-	delete[] distances;
-	delete[] adjacency_list;
-}
-
-int closest_node(int key[], bool mst[]) { //getMinIndex
-	int min = VERY_BIG;
+int closest_node(int number_of_nodes,int key[], bool mst[]) {
+	int min = numeric_limits<int>::max();
 	int closest;
 	for(size_t i = 0; i < number_of_nodes; i++)
 		if(!mst[i] && key[i] < min) {
@@ -41,24 +11,24 @@ int closest_node(int key[], bool mst[]) { //getMinIndex
 	return closest;
 }
 
-void find_odd_degree() { //findOdds
+void find_odd_degree(int number_of_nodes, vector<int> &odd_degree, vector<int> *&adjacency_list) {
 	for (size_t i = 0; i < number_of_nodes; i++)
 		if((adjacency_list[i].size() % 2) != 0)
 			odd_degree.push_back(i);
 }
 
-void perfect_matching() {
+void perfect_matching(int number_of_nodes, double **&distances, vector<int> &odd_degree, vector<int> *&adjacency_list) {
 	int closest;
 	int length;
 	vector<int>::iterator tempi, first, iterator, last;
 
-	find_odd_degree();
+	find_odd_degree(number_of_nodes, odd_degree, adjacency_list);
 
 	while(!odd_degree.empty()) {
 		first = odd_degree.begin();
 		iterator = first + 1;
 		last = odd_degree.end();
-		length = VERY_BIG;
+		length = numeric_limits<int>::max();
 		for(; iterator != last; iterator++)
 			if(distances[*first][*iterator] < length) {
 				length = distances[*first][*iterator];
@@ -72,20 +42,20 @@ void perfect_matching() {
 	}
 }
 
-void init_mst() { //findMST
+void init_mst(int number_of_nodes, double **&distances, vector<int> *&adjacency_list) {
     int *key = new int[number_of_nodes];
     int *parent = new int[number_of_nodes];
     bool *nodes_in_tree = new bool[number_of_nodes];
 
     for (size_t i = 0; i < number_of_nodes; i++) {
-        key[i] = VERY_BIG;
+        key[i] = numeric_limits<int>::max();
         nodes_in_tree[i] = false;
     }
     key[0] = 0;
     parent[0] = -1;
 
     for (size_t i = 0; i < number_of_nodes - 1; i++) {
-        int a = closest_node(key, nodes_in_tree);
+        int a = closest_node(number_of_nodes, key, nodes_in_tree);
         nodes_in_tree[a] = true;
         
         for (size_t j = 0; j < number_of_nodes; j++) {
@@ -104,9 +74,9 @@ void init_mst() { //findMST
     }
 }
 
-void euler_tour(int start, vector<int> &path) {
+void euler_tour(vector<int> &path, int number_of_nodes, int start, vector<int> *&adjacency_list) {
 	vector<int> *tempv = new vector<int>[number_of_nodes];
-	for (size_t i = 0; i < number_of_nodes; i++){
+	for (size_t i = 0; i < number_of_nodes; i++) {
 		tempv[i].resize(adjacency_list[i].size());
 		tempv[i] = adjacency_list[i];
 	}
@@ -132,7 +102,7 @@ void euler_tour(int start, vector<int> &path) {
 	path.push_back(index);
 }
 
-void hamilton(vector<int> &path) {
+void hamilton(vector<int> &path, int number_of_nodes) {
 	bool *visited = new bool[number_of_nodes];
 	for (size_t i = 0; i < number_of_nodes; i++)
 		visited[i] = 0;
@@ -154,51 +124,22 @@ void hamilton(vector<int> &path) {
 	}
 }
 
-
-
-int main(int argc, char const *argv[]) {
-	ios::sync_with_stdio(false);
-	start_time = chrono::high_resolution_clock::now();
-	init_nodes(number_of_nodes, nodes, distances);
-	adjacency_list = new vector<int>[number_of_nodes];
-	
-	if(number_of_nodes == 1) {
-		cout << 0 << "\n";
-		return 0;
-	}
-
-	calc_distances(number_of_nodes, nodes, distances);
-
-	init_mst();
-
-	perfect_matching();
-
+void christofides(vector<int> &path, int number_of_nodes, double **&distances) {
+	vector<int> *adjacency_list = new vector<int>[number_of_nodes];
+	vector<int> odd_degree;
+	init_mst(number_of_nodes, distances, adjacency_list);
+	perfect_matching(number_of_nodes, distances, odd_degree, adjacency_list);
 	int best_start = 0;
-	double best_dist = VERY_BIG;
+	double best_dist = numeric_limits<int>::max();
 	for (size_t i = 0; i < number_of_nodes; i++) {
-		vector<int> path;
-		euler_tour(i, path);
-		hamilton(path);
+		euler_tour(path, number_of_nodes, i, adjacency_list);
+		hamilton(path, number_of_nodes);
 		double dist = calc_total_distance(path, distances);
 		if(dist < best_dist)
 			best_start = i;
 	}
-	
-	vector<int> path;
-	euler_tour(best_start, path);
+	euler_tour(path, number_of_nodes, best_start, adjacency_list);
+	hamilton(path, number_of_nodes);
 
-	hamilton(path);
-
-	auto now_time = chrono::high_resolution_clock::now();
-	while(chrono::duration_cast<chrono::microseconds>(now_time - start_time).count() < TIME_LIMIT) {
-		opt2(path, distances);
-		now_time = chrono::high_resolution_clock::now();
-	}
-
-	cerr << "Total distance = " << calc_total_distance(path, distances) << " , Total time = " << chrono::duration_cast<chrono::microseconds>(now_time - start_time).count() << "\n";
-
-	//print_path(path);
-
-	exit();
-	return 0;
+	delete[] adjacency_list;
 }

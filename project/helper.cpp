@@ -4,7 +4,7 @@ double calc_total_distance(vector<int> &path, double **&distances) {
 	double total_distance = 0;
 	for (size_t i = 0; i < path.size() - 1; i++)
 		total_distance += distances[path[i]][path[i + 1]];
-	total_distance += distances[path[0]][path[path.size() - 1]];
+	total_distance += distances[path[path.size() - 1]][path[0]];
 	return total_distance;
 }
 

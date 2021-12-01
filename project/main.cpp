@@ -1,6 +1,7 @@
 #include "helper.h"
 #include "greedy.h"
 #include "opt2.h"
+//#include "christofides.h"
 #include <iostream>
 #include <chrono>
 
@@ -30,6 +31,7 @@ int main(int argc, char const *argv[]) {
 	calc_distances(number_of_nodes, nodes, distances);
 
 	greedy(path, number_of_nodes, distances);
+	//christofides(path, number_of_nodes, distances);
 
 	auto now_time = chrono::high_resolution_clock::now();
 	while(chrono::duration_cast<chrono::microseconds>(now_time - start_time).count() < TIME_LIMIT) {
@@ -46,7 +48,6 @@ int main(int argc, char const *argv[]) {
 	now_time = chrono::high_resolution_clock::now();
 
 	cerr << "Total distance = " << calc_total_distance(path, distances) << " , Total time = " << chrono::duration_cast<chrono::microseconds>(now_time - start_time).count() << "\n";
-
 	exit();
 	return 0;
 }
