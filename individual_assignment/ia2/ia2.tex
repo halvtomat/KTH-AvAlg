@@ -1,0 +1,129 @@
+\documentclass[11pt, a4paper]{article}
+
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+
+\title{Individual Assignment 2.5 (Grade E)}
+\author{Daniel Gustafsson}
+\date{December 2021}
+
+\begin{document}
+\maketitle
+
+\section{Solution}
+The suggested solution is to use a variant of the Misra-Gries algorithm to calculate the
+frequency of the 100 most common elements in a data stream and then check if the most
+frequent element out of those appears more than 50\% of the time in the data stream.
+
+If some element appears more than 50\% of the time, return that element, otherwise return
+"No majority".
+
+\subsection{Pseudo code}
+
+\begin{algorithmic}[1]
+\State $dictionary \gets \emptyset$
+\State $m \gets 0$
+\For{$a_i$ in $a_1,...,a_m$}
+	\State $m \gets m + 1$
+	\If{$dictionary$ contains $a_i$}
+		\State $dictionary[a_i] \gets dictionary[a_i] + 1$ \Comment{Increment item}
+	\ElsIf{lenght of $dictionary < 99$}
+		\State $dictionary \gets dictionary \cup (a_i, 1)$ \Comment{Add to dictionary}
+	\Else
+		\For{$k$ in $dictionary$} \Comment{Decrement all items}
+			\State $dictionary[k] \gets dictionary[k] - 1$
+			\If{$dictionary[k] = 0$}
+				\State $dictionary \gets dictionary \setminus dictionary[k]$
+			\EndIf
+		\EndFor
+	\EndIf
+\EndFor
+\For{$k$ in $dictionary$}
+	\If{$dictionary[k] > m/2$}
+		\State \Return $k$ \Comment{$k$ is the majority element}
+	\EndIf
+\EndFor
+\State \Return "No majority"
+\end{algorithmic}
+
+\section{Proof}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 1:} The Misra-Gries algorithm will find
+all elements occuring more than $m/k$ times.
+\newline
+
+\textit{Proof}: Proven in class.
+
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 2:} If a majority element exists,
+it will be in the dictionary.
+\newline
+
+\textit{Proof}: Since $k = 100$, all elements occuring more than $m/100$ times or 
+\textit{more than 1\% of times} will be in the dictionary according to Lemma 1. Since $50\%$ is more than
+$1\%$, the majority element will be in the dictionary if it exists.
+
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 3:} The count value in the dictionary
+will in the span $f - m/k \le count \le f$ where $f$ is the true frequency.
+\newline
+
+\textit{Proof}: Suppose $e$ is an element that occurs more than $m/k$ times in the stream.
+An occurance of $e$ is not counted in two different situations:
+
+\begin{itemize}
+	\item The dictionary is full and another element is added, the count of $e$ will be
+decremented.
+	\item Try to insert $e$ but dictionary is already full.
+\end{itemize}
+
+These events can only happen $m/k$ times.
+
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 4:} If an element's count value is
+more than $m/2$ in the dictionary, it is the majority element.
+\newline
+
+\textit{Proof}: From Leamm 3 we know that the count value is never greater than the true frequency
+of an item. 
+
+Trivially this means that if the count is greater than $m/2$ that element is the majority element.
+
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 5:} The algorithm uses at most
+$100 (log(n) + log(m))$ bits of memory.
+\newline
+
+\textit{Proof}: The algorithm will use $log(n) + log(m)$ bits of memory for each entry in the 
+dictionary. $log(n)$ because the $key$ will always be in the span $1 \le key \le n$.
+$log(m)$ because the $count$ will always be in the span $1 \le count \le m$.
+The dictionary contains at most 100 entries and will therefore never use more than
+$100 * (log(n) + log(m))$ bits of memory.
+
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 6:} The algorithm uses less than
+$\mathcal{O}(poly log(n + m))$ bits of memory.
+\newline
+
+\textit{Proof}: From Lemma 5 we know that the algorithm uses at most $100(log(n) + log(m))$ bits
+of memory. The memory use will essentially increase linearly up until 100 unique elements exists
+in the stream and after that it will be constant. So the worst case is  when $n = 100$ and $m \ge 100$.
+
+\[100(log(100) + log(100)) = 400\]
+
+\[\mathcal{O}(poly log(100 + 100)) = 2.30^x\]
+
+If we choose $x$ to be large enough the algorithm will always use less memory.
+
+}}
+
+\end{document}
