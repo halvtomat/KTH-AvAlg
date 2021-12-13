@@ -1,0 +1,74 @@
+\documentclass{article}[11pt, a4paper]
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+\title{TSP Projekt \\ Kattis id: \href{https://kth.kattis.com/submissions/8120615}{8120615}}
+\author{Daniel Gustafsson \cr Valerio Akman}
+\date{December 2021}
+
+\hypersetup{colorlinks=true, linkcolor=magenta}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+The Travelling Sales Person problem is a famous computer science problem where a sales person needs to find the shortest path between some cities. The problem is essentially just to find a Hamiltonian cycle between a set of nodes. The amount of possible paths is $n!$ so the naive way of comparing all paths won't work in reasonable time. The solution therefore is to use approximation algorithms to try to find a path as close to the best path as possible.
+
+\section{Algorithms}
+For this project we tried several different algorithms. Our passing score on Kattis was done by using a combination of greedy algorithm, 2-opt and simulated annealing.
+
+\subsection{Greedy-Tour}
+The greedy algorithm is a simple algorithm that follows an intuitive heuristic to make a local optimal choice for each stage. Given a set of k nodes N = ${n_1,...,n_k}$ the algorithm starts at an initial node $n_1$ and will create a path by traversing from the initial node to the nearest node. The algorithm then follows the heuristic to continuously build onto this path by always visiting the closest node from the current node that has not yet been traveled to. Once the algorithm is finished we have a Hamiltonian cycle.
+
+\subsection{2-opt}
+2-Opt works by swapping two edges in a given path to try and make the path shorter. This algorithm can't create a path from scratch and therefore needs some other algorithm to first create a path which can be improved. 
+
+Swapping two edges is not as easy as swapping position of two nodes in the path vector, what you have to do instead is to reverse all nodes in between the two nodes in the path.
+
+This algorithm is guaranteed to find a local minimum in a path given enough time since it tries to swap each edge with each other edge.
+
+\subsection{Simulated Annealing}
+Annealing is originally when a blacksmith heats up metal and lets it cool slowly to allow the metal atoms to fall into a more stable arrangement. Simulated annealing is similar to this.
+
+Simulated annealing is (in this case) an improvement to the 2-opt algorithm where instead of just swapping edges which improve the total distance, we keep a $temperature$ variable which provides a probability to swap even when the total distance is negatively affected. 
+
+The $temperature$ is lowered after each run of the 2-opt algorithm, meaning that the probability to accept negative swaps lowers after each run.
+
+The purpose with this is to escape local minimums to find the global minimum.
+
+\subsection{Honorable Mentions}
+The following algorithms were implemented and tested but didn't make it to the final version. 
+
+\subsubsection{Farthest Node}
+The algorithm start of by picking the three nodes in the set of nodes N that are all furthest away from each other and create a tour. From here the algorithm builds upon the path by choosing the node farthest away from any node in the tour and includes it to the tour by creating a link between this node and the two most closest nodes already in the tour.
+
+\subsubsection{Random}
+The simplest algorithm of all, create a path by just shuffling the order of all nodes. 
+This algorithm was used only to create a path before running 2-opt to improve it.
+
+The advantage of this algorithm is that it is very fast $\mathcal{O}(n)$ which allows for more 2-opt runs which allows a higher initial simulated annealing temperature.
+
+\section{Testing}
+To test all of these different algorithms and combinations of them, we got test data from both Kattis and \href{https://www.math.uwaterloo.ca/tsp/world/countries.html}{this site}.
+
+Initially we tried the farthest node algorithm which didn't get that good results. This configuration got $\sim 5$ score in Kattis which is far from enough.
+
+The second configuration we tried was farthest node with 2-opt optimisation. Unfortunately we had implemented the 2-opt algorithm badly at this points, it worked but had significantly lower-than-optimal (time) performance which meant it didn't always have time to reach its local minimum path. This configuration got $\sim 9$ score in Kattis which still is far from enough.
+
+The third configuration was to add simulated annealing to the 2-opt and still use farthest node to find the initial path. This configuration saw an improvement but 2-opt was still performing badly which meant we couldn't use a very high initial temperature for the simulated annealing. This configuration reached a score of $\sim 14$ in Kattis which still wasn't enough.
+
+The fourth and final configuration was to switch the farthest node algorithm to the greedy-tour algorithm and improve the 2-opt's performance. Now initial temperature for the simulated annealing could also be increased because of the extra milliseconds we gained from improving 2-opt. This configuration, (after tuning and tweaking initial temperature a bit) got a score of $\sim 23$ in Kattis which is more than enough to pass the course.
+
+\section{Choice of data structures and algorithms}
+The choice of data structures came intuitively. Nodes where stored in a double[][] where the first array index represents a node number and the second array index is to get the x and y coordinates of the respective node.
+
+Another double[][] was made to contain the distances between nodes. In this array, both indexes represent a node number and the value held is the distance between them.
+
+The choice of algorithms boiled down to nothing less than trial and error. As mentioned in chapter 3 we tried several configurations of algorithms and noticed that the combination of greedy-tour, 2-opt and simulated annealing provided the best scores. 
+
+\section{Choice of programming language}
+Since time was of the essence for this assignment, due to the 2 second time limit, we wanted to use a fast programming language. The faster the code executes the more time our program would have to build a path and then optimize it with our 2-opt algorithm which was a crucial/pivotal step to pass Kattis. After looking through \href{https://kth.kattis.com/problems/tsp/statistics}{Kattis statistics} for this problem we identified that C++ was the most common used and top scoring programming language for this assignment. Therefore we chose to use C++.
+
+\end{document}
+

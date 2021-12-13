@@ -3,4 +3,7 @@ __pycache__
 *.pdf
 *.log
 *.out
+*.fdb_latexmk
+*.fls
+*.zip
 .vscode
