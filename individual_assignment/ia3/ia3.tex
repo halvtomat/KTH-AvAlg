@@ -1,5 +1,10 @@
 \documentclass[11pt, a4paper]{article}
 
+\usepackage{amsmath}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+
 \title{Individual assignment 3, Problem 4 (Grade E)}
 \author{Daniel Gustafsson}
 \date{December 2021}
@@ -7,8 +12,104 @@
 \begin{document}
 \maketitle
 
-\section{Solution}
+\section*{The Probability}
 
-\[3 * 1/6^6 = 6.43 * 10^{-5} \]
+\[3 * {1/6}^6 = 6.43 * 10^{-5} \]
+
+\section*{The Proof}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 1:} There are 3 and only 3 paths with
+length 6 in the graph. The paths are the following: 
+
+\vspace{1mm}\noindent \textbf{1} [ f c a d b e ]
+
+\vspace{1mm}\noindent \textbf{2} [ f c a d g e ]
+
+\vspace{1mm}\noindent \textbf{3} [ g f c a d b ]
+
+\vspace{2mm}\textit{Proof}: Since this graph is small and with a limited number of paths to follow,
+it is easy to manually follow the paths and find that the above paths are the only viable ones.
+
+To test all paths in the graph, I try to start a path at each vertex and follow it until either a
+path with lenght 6 is found or the path ends.
+
+\vspace{2mm}\noindent
+Starting from \textbf{a} there are 4 different paths to follow with lenghts 4, 4, 4 and 5.
+
+\vspace{1mm}\noindent [ a d b e ]
+
+\vspace{1mm}\noindent [ a d f c ]
+
+\vspace{1mm}\noindent [ a d g e ]
+
+\vspace{1mm}\noindent [ a d g f c ]
+
+\vspace{2mm}\noindent
+Starting from \textbf{b} there is only 1 path with lenght 2 to follow.
+
+\vspace{1mm}\noindent [ b e ]
+
+\vspace{2mm}\noindent
+Starting from \textbf{c} there are 4 different paths to follow with lenghts 4, 5, 5 and 5.
+
+\vspace{1mm}\noindent [ c a d f ]
+
+\vspace{1mm}\noindent [ c a d b e ]
+
+\vspace{1mm}\noindent [ c a d g e ]
+
+\vspace{1mm}\noindent [ c a d g f ]
+
+\vspace{2mm}\noindent
+Starting from \textbf{d} there are 4 different paths to follow with lenghts 3, 3, 4 and 5.
+
+\vspace{1mm}\noindent [ d b e ]
+
+\vspace{1mm}\noindent [ d g e ]
+
+\vspace{1mm}\noindent [ d f c a ]
+
+\vspace{1mm}\noindent [ d g f c a ]
+
+\vspace{2mm}\noindent
+Starting from \textbf{e} there is only 1 path with length 1 to follow.
+
+\vspace{1mm}\noindent [ e ]
+
+\vspace{2mm}\noindent
+Starting from \textbf{f} there are 2 different paths to follow with lenghts 6 and 6.
+
+\vspace{1mm}\noindent [ f c a d b e ] (Path \textbf{1})
+
+\vspace{1mm}\noindent [ f c a d g e ] (Path \textbf{2})
+
+\vspace{2mm}\noindent
+Starting from \textbf{g} there are 2 different paths to follow with lengths 2 and 6.
+
+\vspace{1mm}\noindent [ g e ]
+
+\vspace{1mm}\noindent [ g f c a d b ] (Path \textbf{3})
+
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 2:} The probability for the Color Coding
+algorithm to find a specific path of length 6 in the graph is ${1/6}^6$.
+
+\vspace{2mm}\textit{Proof}: If the i$^{th}$ node of the path P is colored i, for all i, then the path will be found.
+The probability for each node to be a specific color is $1/6$. The probability for 6 specific vertices to
+each be a specific color is ${1/6}^6$. 
+
+\vspace{2mm}\noindent
+This is the same probability given as the lower bound of success in Chapter 3.2 of the course literature. 
+
+}}
+
+\vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 3:} The probability for the Color Coding
+algorithm to find any path of length 6 in the graph is $3 * {1/6}^6$.
+
+\vspace{2mm}\textit{Proof}: Combining the knowledge from Lemma 1 and Lemma 2 we get that the total probability
+for the algorithm to find a path of lenght 6 is $3 * {1/6}^6$.
+
+}}
 
 \end{document}

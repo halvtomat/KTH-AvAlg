@@ -48,22 +48,22 @@ def main():
 		path = []
 		if find_path(graph, k, path):
 			counter += 1
-	#		if len(paths) == 0:
-	#			paths.append(np.array(path))
-	#		else:
-	#			contains = False
-	#			for p in paths:
-	#				if np.array_equiv(p, np.array(path)):
-	#					contains = True
-	#			if not contains:
-	#				paths.append(np.array(path))
+			if len(paths) == 0:
+				paths.append(np.array(path))
+			else:
+				contains = False
+				for p in paths:
+					if np.array_equiv(p, np.array(path)):
+						contains = True
+				if not contains:
+					paths.append(np.array(path))
 	print("counter = ", counter)
 	print("probability = ", counter/x)
 	print("expected counter = ", round(3 * x * (1/k)**k))
 	print("expected probability = ", 3 *(1/k)**k)
-	#print("\nUNIQUE PATHS\n")
-	#for p in paths:
-	#	print(p)
+	print("\nUNIQUE PATHS\n")
+	for p in paths:
+		print(p)
 
 if __name__ == "__main__":
 	main()
