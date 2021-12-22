@@ -33,7 +33,7 @@ def find_path(graph, k, final_path):
 
 def main():
 	x = int(sys.argv[1])
-	k = int(sys.argv[2])
+	k = 6
 	graph = []
 	graph.append([3])
 	graph.append([4])
@@ -57,10 +57,11 @@ def main():
 						contains = True
 				if not contains:
 					paths.append(np.array(path))
+	expected = 3 * ((1/k)**k) - ((1/k)**(k+1))
 	print("counter = ", counter)
 	print("probability = ", counter/x)
-	print("expected counter = ", round(3 * x * (1/k)**k))
-	print("expected probability = ", 3 *(1/k)**k)
+	print("expected counter = ", round(x * expected))
+	print("expected probability = ", expected)
 	print("\nUNIQUE PATHS\n")
 	for p in paths:
 		print(p)

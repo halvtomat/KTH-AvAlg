@@ -14,7 +14,7 @@
 
 \section*{The Probability}
 
-\[3 * {1/6}^6 = 6.43 * 10^{-5} \]
+\[3 * \frac{1}{6^6} - \frac{1}{6^7}\]
 
 \section*{The Proof}
 
@@ -93,11 +93,11 @@ Starting from \textbf{g} there are 2 different paths to follow with lengths 2 an
 }}
 
 \vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 2:} The probability for the Color Coding
-algorithm to find a specific path of length 6 in the graph is ${1/6}^6$.
+algorithm to find a specific path of length 6 in the graph is $\frac{1}{6^6}$.
 
 \vspace{2mm}\textit{Proof}: If the i$^{th}$ node of the path P is colored i, for all i, then the path will be found.
-The probability for each node to be a specific color is $1/6$. The probability for 6 specific vertices to
-each be a specific color is ${1/6}^6$. 
+The probability for each node to be a specific color is $\frac{1}{6}$. The probability for 6 specific vertices to
+each be a specific color is $\frac{1}{6^6}$. 
 
 \vspace{2mm}\noindent
 This is the same probability given as the lower bound of success in Chapter 3.2 of the course literature. 
@@ -105,10 +105,17 @@ This is the same probability given as the lower bound of success in Chapter 3.2 
 }}
 
 \vspace{2mm}\noindent\fbox{\parbox{\textwidth}{\textbf{Lemma 3:} The probability for the Color Coding
-algorithm to find any path of length 6 in the graph is $3 * {1/6}^6$.
+algorithm to find any path of length 6 in the graph is $3 * \frac{1}{6^6} - \frac{1}{6^7}$.
 
 \vspace{2mm}\textit{Proof}: Combining the knowledge from Lemma 1 and Lemma 2 we get that the total probability
-for the algorithm to find a path of lenght 6 is $3 * {1/6}^6$.
+for the algorithm to find a path of length 6 is $3 * {1/6}^6$ but this doesn't account for the fact that
+two of the paths are the same in all but one vertex. The two similar paths can therefore be correct at the same
+time and the probability for this event to happen needs to be removed from the total probability.
+
+For both paths to be correct, all 7 nodes would need to be a specific color, this means that the probability of
+this event happening is $\frac{1}{6^7}$.
+
+The total probability for the Color Coding algorithm to find any path of length 6 is therefore $3 * \frac{1}{6^6} - \frac{1}{6^7}$.
 
 }}
 
